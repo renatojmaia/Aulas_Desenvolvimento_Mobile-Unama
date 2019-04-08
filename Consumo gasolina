@@ -1,0 +1,108 @@
+//Projeto Calcular Consumo gasolina
+
+//Activity TELA1
+//Programação no arquivo .java
+
+public class Tela1 extends AppCompatActivity {
+    
+// 1. criar variáveis de componentes dinâmicos:
+    EditText editModelo, editDistancia, editPotencia, editGas;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tela1);
+        // 2. integração entre XML e Java:
+        editModelo    = findViewById(R.id.edit_modelo);
+        editDistancia = findViewById(R.id.edit_distancia);
+        editPotencia  = findViewById(R.id.edit_potencia);
+        editGas = findViewById(R.id.edit_gas);
+    } // fim do onCreate
+
+    // 3. criar o método que será chamado no clique do botão:
+    public void calcular(View v) {
+
+        // 4. pegar valores digitados:
+        String modelo    = editModelo.getText().toString();
+        String gasolina  = editGas.getText().toString();
+        String distancia = editDistancia.getText().toString();
+        String potencia  = editPotencia.getText().toString();
+        
+// 5. converter String para double:
+        double gasNum  = Double.parseDouble(gasolina);
+        double distNum = Double.parseDouble(distancia);
+        double potNum  = Double.parseDouble(potencia);
+        
+// 6. realizar o cálculo  através do método calcTotal:
+        double total = calcTotal(gasNum, distNum, potNum);
+        
+// 7. Intent explícita:
+        Intent tela2 = new Intent(this, Tela2.class);
+        tela2.putExtra("modelo", modelo);
+        tela2.putExtra("distancia", distancia);
+        tela2.putExtra("potencia", potencia);
+        tela2.putExtra("gasolina", gasolina);
+        tela2.putExtra("total", total);
+        
+startActivity( tela2 );
+   
+ } // fim do calcular
+      
+// Implementar método calcular 
+    private double calcTotal(double gasNum, double distNum,
+                             double potNum) {
+        if(potNum <= 1.0)
+            return distNum * gasNum / 13.0;
+        else if (potNum > 1.0 && potNum <= 1.4)
+            return distNum * gasNum / 11.0;
+        else if (potNum > 1.4 && potNum <= 1.9)
+            return distNum * gasNum / 9.5;
+        else
+            return distNum * gasNum / 7.75;
+    } // fim do calcTotal
+
+} // fim da classe
+
+
+//Projeto Calcular Consumo gasolina continuação 
+//Activity TELA2
+//Programação no arquivo .java
+
+public class Tela2 extends AppCompatActivity {
+
+// 1. componentes dinâmico:
+    TextView txtResultado;
+// 2. variáveis para armazenar valores da Tela2:
+    String modelo, distancia, potencia, gasolina;
+    double total;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_tela2);
+
+// 3. pegar a Intent explícita enviada para cá:
+    Intent i = getIntent();
+    modelo    = i.getStringExtra("modelo");
+    distancia = i.getStringExtra("distancia");
+    potencia  = i.getStringExtra("potencia");
+    gasolina  = i.getStringExtra("gasolina");
+    total     = i.getDoubleExtra("total", 0.0);
+    setTitle("RESULTADO");
+    txtResultado.setText(modelo + " "+potencia + " gasta R$ " +
+    total + " para percorrer " + distancia + " km com gasolina a R$ " + gasolina + " por litro");
+    } // fim do onCreate
+
+// Criacar uma intent para compartilhar via menu.
+
+    public void compartilhar(View v) {
+// 4. Intent implícita
+        Intent c = new Intent( Intent.ACTION_SEND );
+        c.setType( "text/plain" );
+        c.putExtra( Intent.EXTRA_SUBJECT, "Gasapp" );
+        c.putExtra( Intent.EXTRA_TEXT, txtResultado.getText() );
+        startActivity( Intent.createChooser(c, "Compartilhar...") );
+    }
+
+} // fim da classe
+
+
